@@ -19,4 +19,14 @@ public partial class GameBrowser : UserControl
     public void OnUpdate()
     {
     }
+
+    protected override CreateParams CreateParams // Prevent flickering, make the control more consistent...
+    {
+        get
+        {
+            CreateParams cp = base.CreateParams;
+            cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED
+            return cp;
+        }
+    }
 }

@@ -128,4 +128,14 @@ public partial class ServerBrowser : UserControl
     {
         return await GameServerApiService.GetServers(game);
     }
+
+    protected override CreateParams CreateParams // Prevent flickering, make the control more consistent...
+    {
+        get
+        {
+            CreateParams cp = base.CreateParams;
+            cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED
+            return cp;
+        }
+    }
 }
