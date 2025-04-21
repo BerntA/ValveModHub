@@ -39,6 +39,7 @@
             ClientSize = new Size(784, 561);
             DoubleBuffered = true;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            MinimumSize = new Size(800, 600);
             Name = "MainForm";
             Text = "Valve Mod Hub";
             WindowState = FormWindowState.Maximized;

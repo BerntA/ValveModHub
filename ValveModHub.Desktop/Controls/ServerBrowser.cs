@@ -48,11 +48,47 @@ public partial class ServerBrowser : UserControl
 
         games.SelectedIndex = 0;
 
+        var filterLayout = new FlowLayoutPanel();
+        filterLayout.Parent = grid;
+        filterLayout.Dock = DockStyle.Fill;
+        filterLayout.FlowDirection = FlowDirection.RightToLeft;
+
+        var serverFilterBox = new TextBox();
+        serverFilterBox.Parent = filterLayout;
+
+        var serverFilterLabel = new Label();
+        serverFilterLabel.Parent = filterLayout;
+        serverFilterLabel.Text = "Filter:";
+        serverFilterLabel.AutoSize = false;
+        serverFilterLabel.TextAlign = ContentAlignment.MiddleRight;
+        serverFilterLabel.Width = 50;
+
+        var checkNoFull = new CheckBox();
+        checkNoFull.Parent = filterLayout;
+        checkNoFull.Text = "Hide Full";
+        checkNoFull.AutoSize = false;
+        checkNoFull.Width = 80;
+
+        var checkNoEmpty = new CheckBox();
+        checkNoEmpty.Parent = filterLayout;
+        checkNoEmpty.Text = "Hide Empty";
+        checkNoEmpty.AutoSize = false;
+        checkNoEmpty.Width = 100;
+
+        var totalServersLabel = new Label();
+        totalServersLabel.Parent = filterLayout;
+        totalServersLabel.Text = "Found X servers";
+        totalServersLabel.AutoSize = false;
+        totalServersLabel.TextAlign = ContentAlignment.MiddleRight;
+        totalServersLabel.Width = 300;
+
         grid.SetCellPosition(games, new TableLayoutPanelCellPosition(0, 0));
         grid.SetCellPosition(serverList, new TableLayoutPanelCellPosition(0, 1));
+        grid.SetCellPosition(filterLayout, new TableLayoutPanelCellPosition(0, 2));
 
         grid.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         grid.RowStyles.Add(new RowStyle(SizeType.Percent, 100.0f));
+        grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 40.0f));
 
         _serverList = serverList;
         UpdateListColumns(serverList);
