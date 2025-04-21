@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using ValveModHub.Common.External;
+using ValveModHub.Common.Model;
 using ValveModHub.Common.Model.A2S;
 
 namespace ValveModHub.Server.Services;
@@ -13,7 +14,7 @@ public class SteamPlayerDetailApiService
         _cache = memoryCache;
     }
 
-    public async Task<List<PlayerInfo>> FetchPlayerDetails(string address)
+    public async Task<List<PlayerItem>> FetchPlayerDetails(string address)
     {
         var key = $"PlayerDetails-{address}";
         return await _cache.GetOrCreateAsync(key, async entry =>
@@ -33,6 +34,12 @@ public class SteamPlayerDetailApiService
 
             return details
                 .OrderByDescending(p => p.Score)
+                .Select(p => new PlayerItem
+                {
+                    Name = p.Name,
+                    Score = p.Score,
+                    Duration = p.GetDurationPlayed()
+                })
                 .ToList();
         });
     }

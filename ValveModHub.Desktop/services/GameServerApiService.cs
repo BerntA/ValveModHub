@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Nodes;
+﻿using Microsoft.Extensions.Caching.Memory;
+using System.Diagnostics;
+using System.Text.Json.Nodes;
 using ValveModHub.Common.Model;
 using ValveModHub.Common.Utils;
 
@@ -18,7 +20,27 @@ public static class GameServerApiService
         if (game is null)
             return [];
 
-        return await Fetch<GameServerItem>($"{ConfigUtils.Settings.Server.Url}/api/gameserver/{game.Name}");
+        return await GlobalCache.Cache.GetOrCreateAsync<List<GameServerItem>>($"game-servers-{game.Name.ToLower()}",
+            async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2);
+                var servers = await Fetch<GameServerItem>($"{ConfigUtils.Settings.Server.Url}/api/gameserver/{game.Name}");
+                return [.. servers.OrderByDescending(o => o.CurrentPlayers)];
+            });
+    }
+
+    public static async Task<List<PlayerItem>> GetPlayers(GameServerItem? server)
+    {
+        if (server is null)
+            return [];
+
+        return await GlobalCache.Cache.GetOrCreateAsync($"game-server-{server.Address}-players",
+            async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1);
+                var players = await Fetch<PlayerItem>($"{ConfigUtils.Settings.Server.Url}/api/gameserver/players/{server.Address}");
+                return players;
+            });
     }
 
     private static async Task<List<T>> Fetch<T>(string url)
@@ -38,5 +60,13 @@ public static class GameServerApiService
         {
             return [];
         }
+    }
+
+    public static void ConnectToServer(GameServerItem? server)
+    {
+        if (server is null)
+            return;
+
+        Process.Start("explorer.exe", $"steam://connect/{server.Address}");
     }
 }
