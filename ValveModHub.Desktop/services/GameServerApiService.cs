@@ -18,7 +18,7 @@ public static class GameServerApiService
         if (game is null)
             return [];
 
-        return await Fetch<GameServerItem>($"http://localhost:3000/api/gameserver/{game.Name}");
+        return await Fetch<GameServerItem>($"{ConfigUtils.Settings.Server.Url}/api/gameserver/{game.Name}");
     }
 
     private static async Task<List<T>> Fetch<T>(string url)
