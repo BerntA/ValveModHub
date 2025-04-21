@@ -8,6 +8,11 @@ namespace ValveModHub.Desktop.Controls;
 public partial class ServerBrowser : UserControl
 {
     private readonly ListView _serverList;
+    private readonly ComboBox _games;
+    private readonly TextBox _serverFilterBox;
+    private readonly CheckBox _checkNoFull;
+    private readonly CheckBox _checkNoEmpty;
+    private readonly Label _totalServersLabel;
 
     public ServerBrowser()
     {
@@ -22,81 +27,86 @@ public partial class ServerBrowser : UserControl
         grid.Dock = DockStyle.Fill;
         grid.CellBorderStyle = TableLayoutPanelCellBorderStyle.None;
 
-        var serverList = new ListView();
-        serverList.Parent = grid;
-        serverList.Dock = DockStyle.Fill;
-        serverList.BorderStyle = BorderStyle.FixedSingle;
-        serverList.View = View.Details;
-        serverList.FullRowSelect = true;
-        serverList.HoverSelection = serverList.MultiSelect = false;
+        _serverList = new ListView();
+        _serverList.Parent = grid;
+        _serverList.Dock = DockStyle.Fill;
+        _serverList.BorderStyle = BorderStyle.FixedSingle;
+        _serverList.View = View.Details;
+        _serverList.FullRowSelect = true;
+        _serverList.HoverSelection = _serverList.MultiSelect = false;
 
-        serverList.Columns.Add("Name");
-        serverList.Columns.Add("Players");
-        serverList.Columns.Add("Map");
+        _serverList.Columns.Add("Name");
+        _serverList.Columns.Add("Players");
+        _serverList.Columns.Add("Map");
 
-        serverList.DoubleClick += (s1, e1) => GameServerApiService.ConnectToServer(GetActiveServerItem());
-        serverList.ContextMenuStrip = CreateContextMenuStrip();
+        _serverList.DoubleClick += (s1, e1) => GameServerApiService.ConnectToServer(GetActiveServerItem());
+        _serverList.ContextMenuStrip = CreateContextMenuStrip();
 
-        var games = new ComboBox();
-        games.Parent = grid;
-        games.Dock = DockStyle.Fill;
-        games.DropDownStyle = ComboBoxStyle.DropDownList;
-        games.SelectedIndexChanged += async (s1, e1) => await RefreshServerList(games.SelectedIndex, serverList);
+        _games = new ComboBox();
+        _games.Parent = grid;
+        _games.Dock = DockStyle.Fill;
+        _games.DropDownStyle = ComboBoxStyle.DropDownList;
+        _games.SelectedIndexChanged += async (s1, e1) => await RefreshServerList();
 
         foreach (var game in GameList.Games)
-            games.Items.Add(game.Name);
+            _games.Items.Add(game.Name);
 
-        games.SelectedIndex = 0;
+        _games.SelectedIndex = 0;
 
         var filterLayout = new FlowLayoutPanel();
         filterLayout.Parent = grid;
         filterLayout.Dock = DockStyle.Fill;
         filterLayout.FlowDirection = FlowDirection.RightToLeft;
 
-        var serverFilterBox = new TextBox();
-        serverFilterBox.Parent = filterLayout;
+        _serverFilterBox = new TextBox();
+        _serverFilterBox.Parent = filterLayout;
+        _serverFilterBox.Width = 150;
+        _serverFilterBox.TextChanged += async (s1, e1) => await RefreshServerList();
 
         var serverFilterLabel = new Label();
         serverFilterLabel.Parent = filterLayout;
         serverFilterLabel.Text = "Filter:";
         serverFilterLabel.AutoSize = false;
         serverFilterLabel.TextAlign = ContentAlignment.MiddleRight;
-        serverFilterLabel.Width = 50;
+        serverFilterLabel.Width = 45;
 
-        var checkNoFull = new CheckBox();
-        checkNoFull.Parent = filterLayout;
-        checkNoFull.Text = "Hide Full";
-        checkNoFull.AutoSize = false;
-        checkNoFull.Width = 80;
+        _checkNoEmpty = new CheckBox();
+        _checkNoEmpty.Parent = filterLayout;
+        _checkNoEmpty.Text = "Hide Empty";
+        _checkNoEmpty.AutoSize = false;
+        _checkNoEmpty.Width = 100;
+        _checkNoEmpty.CheckAlign = _checkNoEmpty.ImageAlign = _checkNoEmpty.TextAlign = ContentAlignment.MiddleRight;
+        _checkNoEmpty.CheckStateChanged += async (s1, e1) => await RefreshServerList();
 
-        var checkNoEmpty = new CheckBox();
-        checkNoEmpty.Parent = filterLayout;
-        checkNoEmpty.Text = "Hide Empty";
-        checkNoEmpty.AutoSize = false;
-        checkNoEmpty.Width = 100;
+        _checkNoFull = new CheckBox();
+        _checkNoFull.Parent = filterLayout;
+        _checkNoFull.Text = "Hide Full";
+        _checkNoFull.AutoSize = false;
+        _checkNoFull.Width = 80;
+        _checkNoFull.CheckAlign = _checkNoFull.ImageAlign = _checkNoFull.TextAlign = ContentAlignment.MiddleRight;
+        _checkNoFull.CheckStateChanged += async (s1, e1) => await RefreshServerList();
 
-        var totalServersLabel = new Label();
-        totalServersLabel.Parent = filterLayout;
-        totalServersLabel.Text = "Found X servers";
-        totalServersLabel.AutoSize = false;
-        totalServersLabel.TextAlign = ContentAlignment.MiddleRight;
-        totalServersLabel.Width = 300;
+        _totalServersLabel = new Label();
+        _totalServersLabel.Parent = filterLayout;
+        _totalServersLabel.Text = "";
+        _totalServersLabel.AutoSize = false;
+        _totalServersLabel.TextAlign = ContentAlignment.MiddleRight;
+        _totalServersLabel.Width = 300;
 
-        grid.SetCellPosition(games, new TableLayoutPanelCellPosition(0, 0));
-        grid.SetCellPosition(serverList, new TableLayoutPanelCellPosition(0, 1));
+        grid.SetCellPosition(_games, new TableLayoutPanelCellPosition(0, 0));
+        grid.SetCellPosition(_serverList, new TableLayoutPanelCellPosition(0, 1));
         grid.SetCellPosition(filterLayout, new TableLayoutPanelCellPosition(0, 2));
 
         grid.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         grid.RowStyles.Add(new RowStyle(SizeType.Percent, 100.0f));
         grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 40.0f));
 
-        _serverList = serverList;
-        UpdateListColumns(serverList);
+        OnUpdate();
     }
 
     public void OnUpdate()
     {
-        UpdateListColumns(_serverList);
+        UpdateListColumns();
     }
 
     private ContextMenuStrip CreateContextMenuStrip()
@@ -127,42 +137,49 @@ public partial class ServerBrowser : UserControl
         return _serverList.SelectedItems[0].Tag as GameServerItem;
     }
 
-    private static void UpdateListColumns(ListView view)
+    private void UpdateListColumns()
     {
-        if (view is null)
-            return;
-
-        int size = view.ClientSize.Width;
-        foreach (ColumnHeader h in view.Columns)
-            h.Width = (size / view.Columns.Count);
+        int size = _serverList.ClientSize.Width;
+        foreach (ColumnHeader h in _serverList.Columns)
+            h.Width = (size / _serverList.Columns.Count);
     }
 
-    private static async Task RefreshServerList(int index, ListView serverList)
+    private async Task RefreshServerList()
     {
+        var index = _games.SelectedIndex;
+
         if (GameList.Games.Count == 0 || index < 0 || index >= GameList.Games.Count)
             return;
 
-        serverList.SuspendLayout();
-        serverList.Items.Clear();
+        _serverList.SuspendLayout();
+        _serverList.Items.Clear();
 
         var game = GameList.Games[index];
-        var items = await Query(game);
+        var items = await GameServerApiService.GetServers(game);
+        var filter = _serverFilterBox.Text;
 
         foreach (var item in items)
         {
-            serverList.Items.Add(new ListViewItem([item.Name, $"{item.CurrentPlayers} / {item.MaxPlayers}", item.Map])
+            if (_checkNoEmpty.Checked && item.CurrentPlayers <= 0)
+                continue; // hide empty
+
+            if (_checkNoFull.Checked && item.CurrentPlayers >= item.MaxPlayers)
+                continue; // hide full
+
+            if ((filter.Length > 0) &&
+                !((item.Map?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false) || (item.Name?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false)))
+                continue; // filter based on map / server name
+
+            _serverList.Items.Add(new ListViewItem([item.Name, $"{item.CurrentPlayers} / {item.MaxPlayers}", item.Map])
             {
                 Tag = item,
             });
         }
 
-        serverList.ResumeLayout();
-        UpdateListColumns(serverList);
-    }
+        _totalServersLabel.Text = $"{_serverList.Items.Count} servers found";
 
-    private static async Task<List<GameServerItem>> Query(Game game)
-    {
-        return await GameServerApiService.GetServers(game);
+        _serverList.ResumeLayout();
+        OnUpdate();
     }
 
     protected override CreateParams CreateParams // Prevent flickering, make the control more consistent...
