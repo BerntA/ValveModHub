@@ -1,6 +1,6 @@
-﻿namespace GameServerList.Desktop
+﻿namespace ValveModHub.Desktop.Forms
 {
-    partial class ServerBrowserForm
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.

@@ -24,7 +24,7 @@
 
 	<ItemGroup>
 		<Reference Include="Facepunch.Steamworks.Win64">
-			<HintPath>steamworks\Facepunch.Steamworks.Win64.dll</HintPath>
+			<HintPath>Steamworks\Facepunch.Steamworks.Win64.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 
