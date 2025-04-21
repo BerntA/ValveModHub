@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using ValveModHub.Common.Model.A2S;
 
 namespace ValveModHub.Common.Model;
 
@@ -41,13 +40,5 @@ public class GameServerItem
 
     [JsonPropertyName("bots")]
     public int? Bots { get; set; }
-    #endregion
-
-    #region PlayerInfo
-    [JsonIgnore]
-    public List<PlayerInfo>? ActivePlayers { get; set; }
-
-    [JsonIgnore]
-    public bool ShouldShowDetails { get; set; } = false;
     #endregion
 }
