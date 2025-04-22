@@ -157,6 +157,7 @@ public partial class ServerBrowser : UserControl
         var game = GameList.Games[index];
         var items = await GameServerApiService.GetServers(game);
         var filter = _serverFilterBox.Text;
+        var players = 0;
 
         foreach (var item in items)
         {
@@ -170,13 +171,14 @@ public partial class ServerBrowser : UserControl
                 !((item.Map?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false) || (item.Name?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false)))
                 continue; // filter based on map / server name
 
+            players += (item.CurrentPlayers ?? 0);
             _serverList.Items.Add(new ListViewItem([item.Name, $"{item.CurrentPlayers} / {item.MaxPlayers}", item.Map])
             {
                 Tag = item,
             });
         }
 
-        _totalServersLabel.Text = $"{_serverList.Items.Count} servers found";
+        _totalServersLabel.Text = $"{_serverList.Items.Count} servers found, with {players} active players";
 
         _serverList.ResumeLayout();
         OnUpdate();
