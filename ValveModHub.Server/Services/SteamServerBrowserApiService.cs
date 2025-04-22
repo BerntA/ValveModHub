@@ -65,12 +65,13 @@ public class SteamServerBrowserApiService
 
             request.EnsureSuccessStatusCode();
 
-            var stream = await request.Content.ReadAsStreamAsync();
+            using var stream = await request.Content.ReadAsStreamAsync();
             var jsonNode = await JsonNode.ParseAsync(stream);
 
-            var data = JsonUtils.DeserializeObject<List<T>>(jsonNode["response"]["servers"].ToJsonString());
+            if (jsonNode is null || jsonNode["response"] is null || jsonNode["response"]["servers"] is null)
+                return [];
 
-            return data;
+            return JsonUtils.DeserializeObject<List<T>>(jsonNode["response"]["servers"].ToJsonString());
         }
         catch
         {
