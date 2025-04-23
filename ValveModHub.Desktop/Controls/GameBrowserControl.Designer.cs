@@ -1,6 +1,6 @@
 ﻿namespace ValveModHub.Desktop.Controls;
 
-partial class GameBrowser
+partial class GameBrowserControl
 {
     /// <summary> 
     /// Required designer variable.

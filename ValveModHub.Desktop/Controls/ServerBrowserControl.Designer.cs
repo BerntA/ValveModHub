@@ -1,6 +1,6 @@
 ﻿namespace ValveModHub.Desktop.Controls;
 
-partial class ServerBrowser
+partial class ServerBrowserControl
 {
     /// <summary> 
     /// Required designer variable.

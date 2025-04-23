@@ -5,7 +5,7 @@ using ValveModHub.Desktop.Services;
 
 namespace ValveModHub.Desktop.Controls;
 
-public partial class ServerBrowser : UserControl
+public partial class ServerBrowserControl : UserControl
 {
     private readonly ListView _serverList;
     private readonly ComboBox _games;
@@ -14,16 +14,19 @@ public partial class ServerBrowser : UserControl
     private readonly CheckBox _checkNoEmpty;
     private readonly Label _totalServersLabel;
 
-    public ServerBrowser()
+    public ServerBrowserControl()
     {
         InitializeComponent();
         DoubleBuffered = true;
     }
 
-    public ServerBrowser(Control parent) : this()
+    public ServerBrowserControl(Control parent) : this()
     {
+        Parent = parent;
+        Dock = DockStyle.Fill;
+
         var grid = new TableLayoutPanel();
-        grid.Parent = parent;
+        grid.Parent = this;
         grid.Dock = DockStyle.Fill;
         grid.CellBorderStyle = TableLayoutPanelCellBorderStyle.None;
 
@@ -39,7 +42,7 @@ public partial class ServerBrowser : UserControl
         _serverList.Columns.Add("Players");
         _serverList.Columns.Add("Map");
 
-        _serverList.DoubleClick += (s1, e1) => GameServerApiService.ConnectToServer(GetActiveServerItem());
+        _serverList.DoubleClick += (s1, e1) => SteamBrowserProtocolService.ConnectToServer(GetActiveServerItem());
         _serverList.ContextMenuStrip = CreateContextMenuStrip();
 
         _games = new ComboBox();
@@ -117,7 +120,7 @@ public partial class ServerBrowser : UserControl
         stripItem = strip.Items.Add("Connect");
         stripItem.Click += (s1, e1) =>
         {
-            GameServerApiService.ConnectToServer(GetActiveServerItem());
+            SteamBrowserProtocolService.ConnectToServer(GetActiveServerItem());
         };
 
         stripItem = strip.Items.Add("Show Players");
