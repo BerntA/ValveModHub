@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using System.Diagnostics;
 using System.Text.Json.Nodes;
 using ValveModHub.Common.Model;
 using ValveModHub.Common.Utils;
@@ -60,13 +59,5 @@ public static class GameServerApiService
         {
             return [];
         }
-    }
-
-    public static void ConnectToServer(GameServerItem? server)
-    {
-        if (server is null)
-            return;
-
-        Process.Start("explorer.exe", $"steam://connect/{server.Address}");
     }
 }
