@@ -27,8 +27,8 @@ public partial class MainForm : Form
         tabControl.TabPages.Add(gamesPage);
         tabControl.TabPages.Add(serversPage);
 
-        var gameBrowser = new GameBrowser(gamesPage);
-        var serverBrowser = new ServerBrowser(serversPage);
+        var gameBrowser = new GameBrowserControl(gamesPage);
+        var serverBrowser = new ServerBrowserControl(serversPage);
 
         Resize += (s1, e1) =>
         {
