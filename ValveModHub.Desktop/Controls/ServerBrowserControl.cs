@@ -13,6 +13,7 @@ public partial class ServerBrowserControl : UserControl
     private readonly CheckBox _checkNoFull;
     private readonly CheckBox _checkNoEmpty;
     private readonly Label _totalServersLabel;
+    private readonly System.Windows.Forms.Timer _refreshTimer;
 
     public ServerBrowserControl()
     {
@@ -104,6 +105,15 @@ public partial class ServerBrowserControl : UserControl
         grid.RowStyles.Add(new RowStyle(SizeType.Percent, 100.0f));
         grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 40.0f));
 
+        _refreshTimer = new System.Windows.Forms.Timer();
+        _refreshTimer.Interval = 150;
+        _refreshTimer.Enabled = false;
+        _refreshTimer.Tick += async (s1, e1) =>
+        {
+            await RefreshServerList();
+            _refreshTimer.Stop();
+        };
+
         OnUpdate();
     }
 
@@ -185,6 +195,17 @@ public partial class ServerBrowserControl : UserControl
 
         _serverList.ResumeLayout();
         OnUpdate();
+    }
+
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        if (keyData == Keys.F5)
+        {
+            _refreshTimer.Start();
+            return true;
+        }
+
+        return base.ProcessCmdKey(ref msg, keyData);
     }
 
     protected override CreateParams CreateParams // Prevent flickering, make the control more consistent...
