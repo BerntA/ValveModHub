@@ -1,5 +1,5 @@
-using Steamworks;
 using ValveModHub.Desktop.Forms;
+using ValveModHub.Desktop.Services;
 
 namespace ValveModHub.Desktop;
 
@@ -9,18 +9,8 @@ internal static class Program
     static void Main()
     {
         ApplicationConfiguration.Initialize();
-
-        try
-        {
-            SteamClient.Init(211);
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show(ex.Message, "Error");
-        }
-
+        SteamLoaderService.Load();
         Application.Run(new MainForm());
-
-        SteamClient.Shutdown();
+        SteamLoaderService.Shutdown();
     }
 }
