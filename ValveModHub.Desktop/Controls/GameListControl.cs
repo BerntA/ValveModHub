@@ -1,4 +1,5 @@
 ﻿using ValveModHub.Common.Model;
+using ValveModHub.Desktop.Utils;
 
 namespace ValveModHub.Desktop.Controls;
 
@@ -10,6 +11,7 @@ public partial class GameListControl : UserControl
     {
         InitializeComponent();
         DoubleBuffered = true;
+        ColorThemeHelper.SetSteamDefaultLayout(this);
     }
 
     public GameListControl(string category, List<Game> games) : this()

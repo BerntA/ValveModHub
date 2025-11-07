@@ -1,4 +1,5 @@
 using ValveModHub.Desktop.Controls;
+using ValveModHub.Desktop.Utils;
 
 namespace ValveModHub.Desktop.Forms;
 
@@ -9,6 +10,7 @@ public partial class MainForm : Form
         InitializeComponent();
 
         DoubleBuffered = true;
+        ColorThemeHelper.SetSteamHeaderLayout(this);
 
         var grid = new TableLayoutPanel();
         grid.Parent = this;

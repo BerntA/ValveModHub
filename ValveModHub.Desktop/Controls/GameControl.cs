@@ -1,5 +1,6 @@
 ﻿using ValveModHub.Common.Model;
 using ValveModHub.Desktop.Services;
+using ValveModHub.Desktop.Utils;
 
 namespace ValveModHub.Desktop.Controls;
 
@@ -13,6 +14,7 @@ public partial class GameControl : UserControl
     {
         InitializeComponent();
         DoubleBuffered = true;
+        ColorThemeHelper.SetTransparent(this);
     }
 
     public GameControl(Game game) : this()

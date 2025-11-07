@@ -2,6 +2,7 @@
 using ValveModHub.Common.Utils;
 using ValveModHub.Desktop.Forms;
 using ValveModHub.Desktop.Services;
+using ValveModHub.Desktop.Utils;
 
 namespace ValveModHub.Desktop.Controls;
 
@@ -19,6 +20,7 @@ public partial class ServerBrowserControl : UserControl
     {
         InitializeComponent();
         DoubleBuffered = true;
+        ColorThemeHelper.SetSteamDefaultLayout(this);
     }
 
     public ServerBrowserControl(Control parent) : this()
@@ -45,6 +47,8 @@ public partial class ServerBrowserControl : UserControl
 
         _serverList.DoubleClick += (s1, e1) => SteamBrowserProtocolService.ConnectToServer(GetActiveServerItem());
         _serverList.ContextMenuStrip = CreateContextMenuStrip();
+
+        ColorThemeHelper.SetSteamDefaultLayout(_serverList);
 
         _games = new ComboBox();
         _games.Parent = grid;

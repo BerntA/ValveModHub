@@ -1,4 +1,5 @@
 ﻿using ValveModHub.Common.Utils;
+using ValveModHub.Desktop.Utils;
 
 namespace ValveModHub.Desktop.Controls;
 
@@ -8,6 +9,7 @@ public partial class GameBrowserControl : UserControl
     {
         InitializeComponent();
         DoubleBuffered = true;
+        ColorThemeHelper.SetSteamDefaultLayout(this);
     }
 
     public GameBrowserControl(Control parent) : this()

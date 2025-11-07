@@ -1,5 +1,6 @@
 ﻿using ValveModHub.Common.Model;
 using ValveModHub.Desktop.Services;
+using ValveModHub.Desktop.Utils;
 
 namespace ValveModHub.Desktop.Forms;
 
@@ -10,7 +11,9 @@ public partial class PlayerListForm : Form
     public PlayerListForm()
     {
         InitializeComponent();
+
         DoubleBuffered = true;
+        ColorThemeHelper.SetSteamHeaderLayout(this);
 
         var grid = new TableLayoutPanel();
         grid.Parent = this;
@@ -28,6 +31,8 @@ public partial class PlayerListForm : Form
         playerList.Columns.Add("Name");
         playerList.Columns.Add("Score");
         playerList.Columns.Add("Time");
+
+        ColorThemeHelper.SetSteamDefaultLayout(playerList);
 
         grid.SetCellPosition(playerList, new TableLayoutPanelCellPosition(0, 0));
 
